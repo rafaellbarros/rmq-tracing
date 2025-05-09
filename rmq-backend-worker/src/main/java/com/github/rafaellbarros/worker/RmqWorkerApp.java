@@ -1,4 +1,4 @@
-package com.github.rafaellbarros.backend;
+package com.github.rafaellbarros.worker;
 
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.boot.SpringApplication;
