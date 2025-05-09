@@ -1,0 +1,5 @@
+rootProject.name = 'rmq-tracing'
+
+include 'rmq-backend-api'
+include 'rmq-backend-worker'
+include 'rmq-tracing-core'

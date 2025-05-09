@@ -1,0 +1,47 @@
+spring:
+  application:
+    name: rmq-backend-worker
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: admin
+    password: admin123
+    virtual-host: /
+    connection-timeout: 5000
+    template:
+      exchange-response: exchange.response
+      error-routing-key: error.rout.key
+      success-routing-key: success.rout.key
+      request-queue: rquest
+
+  zipkin:
+    base-url: http://localhost:9411
+    sender.type: web
+
+  sleuth:
+    propagation:
+      type: B3
+    rabbit:
+      enabled: true
+    sampler:
+      probability: 1.0
+
+  output:
+    ansi:
+      enabled: ALWAYS
+
+  devtools:
+    restart:
+      enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus, metrics
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+server:
+  port: 8082

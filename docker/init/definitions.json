@@ -1,0 +1,159 @@
+{
+  "users":[
+    {
+      "name":"admin",
+      "password":"admin123",
+      "tags":[
+        "administrator"
+      ],
+      "limits":{
+
+      }
+    }
+  ],
+  "vhosts":[
+    {
+      "name":"/",
+      "description":"",
+      "metadata":{
+        "description":"",
+        "tags":[
+
+        ],
+        "default_queue_type":"classic"
+      },
+      "tags":[
+
+      ],
+      "default_queue_type":"classic"
+    }
+  ],
+  "permissions":[
+    {
+      "user":"admin",
+      "vhost":"/",
+      "configure":".*",
+      "write":".*",
+      "read":".*"
+    }
+  ],
+  "topic_permissions":[
+
+  ],
+  "parameters":[
+
+  ],
+  "global_parameters":[
+    {
+      "name":"cluster_tags",
+      "value":[
+
+      ]
+    },
+    {
+      "name":"internal_cluster_id",
+      "value":"rabbitmq-cluster-id-mzXuxP2EjfjhY8bfsAGqhQ"
+    }
+  ],
+  "policies":[
+
+  ],
+  "queues":[
+    {
+      "name":"response.success",
+      "vhost":"/",
+      "durable":true,
+      "auto_delete":false,
+      "arguments":{
+        "x-queue-type":"classic"
+      }
+    },
+    {
+      "name":"request",
+      "vhost":"/",
+      "durable":true,
+      "auto_delete":false,
+      "arguments":{
+        "x-queue-type":"classic"
+      }
+    },
+    {
+      "name":"response.error",
+      "vhost":"/",
+      "durable":true,
+      "auto_delete":false,
+      "arguments":{
+        "x-queue-type":"classic"
+      }
+    }
+  ],
+  "exchanges":[
+    {
+      "name":"exchange.response",
+      "vhost":"/",
+      "type":"direct",
+      "durable":true,
+      "auto_delete":false,
+      "internal":false,
+      "arguments":{
+
+      }
+    },
+    {
+      "name":"exchange.request",
+      "vhost":"/",
+      "type":"direct",
+      "durable":true,
+      "auto_delete":false,
+      "internal":false,
+      "arguments":{
+
+      }
+    }
+  ],
+  "bindings":[
+    {
+      "source":"exchange.request",
+      "vhost":"/",
+      "destination":"request",
+      "destination_type":"queue",
+      "routing_key":"request.rout.key",
+      "arguments":{
+
+      }
+    },
+    {
+      "source":"exchange.response",
+      "vhost":"/",
+      "destination":"response.error",
+      "destination_type":"queue",
+      "routing_key":"error.rout.key",
+      "arguments":{
+
+      }
+    },
+    {
+      "source":"exchange.response",
+      "vhost":"/",
+      "destination":"response.success",
+      "destination_type":"queue",
+      "routing_key":"success.rout.key",
+      "arguments":{
+
+      }
+    }
+  ]
+}
+
+
+Boa tarde !
+
+Como gerente técnico do contrato Globalweb, peço acesso ao Teams para:
+
+RAFAEL BARROS SILVA
+
+rsilva.rbs
+
+PERFIL 6 – Desenvolvedor Sênior
+
+Grato
