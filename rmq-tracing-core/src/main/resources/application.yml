@@ -1,0 +1,12 @@
+management:
+  tracing:
+    enabled: true
+    sampling:
+      probability: 0.1  # Valor padrão mais conservador
+
+    zipkin:
+      endpoint: http://localhost:9411/api/v2/spans  # Endpoint do seu servidor Zipkin
+      base-url: ${management.tracing.zipkin.endpoint} # Alternativa para algumas versões
+
+    propagation:
+      type: B3          # Tipo de propagação (B3 é o padrão para Zipkin)

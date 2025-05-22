@@ -2,6 +2,7 @@ package com.github.rafaellbarros.backend.api;
 
 import com.github.rafaellbarros.backend.dto.PaymentDTO;
 import com.github.rafaellbarros.backend.facade.PaymentFacede;
+import io.micrometer.tracing.Tracer;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,7 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Pagamentos", description = "Operações relacionadas a processamento de pagamentos")
 public class PaymentApi {
 
+    private final Tracer tracer;
     private final PaymentFacede paymentFacede;
+
 
     @PostMapping
     @Operation(
@@ -53,7 +56,8 @@ public class PaymentApi {
             )
     })
     public ResponseEntity<String> process(@RequestBody PaymentDTO paymentDTO) {
-        return ResponseEntity.ok(paymentFacede.requestPayment(paymentDTO));
+        var message = "Message sent with traceId: " + tracer.currentSpan().context().traceId() + ", " + paymentFacede.requestPayment(paymentDTO);
+        return ResponseEntity.ok(message);
     }
 
 }

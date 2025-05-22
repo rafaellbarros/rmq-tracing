@@ -1,14 +1,17 @@
 package com.github.rafaellbarros.backend.consumer;
 
 import com.github.rafaellbarros.backend.facade.PaymentFacede;
+import io.micrometer.tracing.Span;
+import io.micrometer.tracing.Tracer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
+import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
+import java.nio.charset.StandardCharsets;
 
 @Slf4j
 @Component
@@ -16,11 +19,26 @@ import java.time.LocalDateTime;
 public class PaymentReponseErrorConsumer {
 
     private final PaymentFacede paymentFacede;
+    private final Tracer tracer;
 
-    @RabbitListener(queues = {"${spring.rabbitmq.template.response-error-queue}"})
+    @RabbitListener(queues = "${spring.rabbitmq.template.response-error-queue}")
     public void receive(@Payload Message message) {
-       log.info("Received message: {}, Time: {}", message, LocalDateTime.now());
-        var payload = message.getPayload().toString();
-        paymentFacede.errorPayment(payload);
+        String traceId = message.getMessageProperties().getHeader("X-Trace-Id");
+
+        Span span = tracer.nextSpan()
+                .name("payment.response.error")
+                .tag("original.trace_id", traceId)
+                .start();
+
+        try (Tracer.SpanInScope scope = tracer.withSpan(span)) {
+            MDC.put("traceId", traceId != null ? traceId : span.context().traceId());
+
+            String payload = new String(message.getBody(), StandardCharsets.UTF_8);
+            log.error("Received ERROR response for original trace: {}", traceId);
+            paymentFacede.errorPayment(payload);
+        } finally {
+            span.end();
+            MDC.remove("traceId");
+        }
     }
 }

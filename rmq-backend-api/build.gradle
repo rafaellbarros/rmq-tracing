@@ -22,21 +22,21 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.8'
 
+    implementation project(':rmq-tracing-core')
+
     // Micrometer e Zipkin dependencies
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'io.micrometer:micrometer-registry-prometheus'
     implementation 'io.micrometer:micrometer-tracing-bridge-brave'
     implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
 
-    implementation 'org.springframework.cloud:spring-cloud-sleuth-brave:3.1.9'
+
 
     // implementation 'io.zipkin.brave:brave-instrumentation-spring-rabbit:5.16.0'
 
     // Logback JSON encoder
     implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
 
-    // Para suporte a tracing nos logs
-    implementation 'org.springframework.cloud:spring-cloud-sleuth-autoconfigure:3.1.9'
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
