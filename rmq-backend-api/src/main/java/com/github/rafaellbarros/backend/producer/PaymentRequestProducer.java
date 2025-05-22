@@ -25,10 +25,10 @@ public class PaymentRequestProducer {
     private final Tracer tracer;
     private final Propagator propagator;
 
-    @Value("${spring.rabbitmq.template.exchange-request}")
+    @Value("${spring.rabbitmq.template.exchange}")
     private String exchange;
 
-    @Value("${spring.rabbitmq.template.request-routing-key}")
+    @Value("${spring.rabbitmq.template.routing-key}")
     private String routingKey;
 
     public String integrate(PaymentDTO paymentDTO) throws JsonProcessingException {

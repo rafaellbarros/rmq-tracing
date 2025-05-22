@@ -21,7 +21,7 @@ public class PaymentReponseSuccessConsumer {
     private final PaymentFacede paymentFacede;
     private final Tracer tracer;
 
-    @RabbitListener(queues = "${spring.rabbitmq.template.response-success-queue}")
+    @RabbitListener(queues = "${spring.rabbitmq.template.success-queue}")
     public void receive(@Payload Message message) {
         String traceId = message.getMessageProperties().getHeader("X-Trace-Id");
 

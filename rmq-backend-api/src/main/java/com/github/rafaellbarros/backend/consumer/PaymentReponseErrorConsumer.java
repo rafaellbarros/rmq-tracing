@@ -21,7 +21,7 @@ public class PaymentReponseErrorConsumer {
     private final PaymentFacede paymentFacede;
     private final Tracer tracer;
 
-    @RabbitListener(queues = "${spring.rabbitmq.template.response-error-queue}")
+    @RabbitListener(queues = "${spring.rabbitmq.template.error-queue}")
     public void receive(@Payload Message message) {
         String traceId = message.getMessageProperties().getHeader("X-Trace-Id");
 

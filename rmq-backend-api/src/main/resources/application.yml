@@ -2,29 +2,41 @@ spring:
   application:
     name: rmq-backend-api
   rabbitmq:
-    host: localhost
-    port: 5672
-    username: admin
-    password: admin123
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER:admin}
+    password: ${RABBITMQ_PASS:admin123}
     virtual-host: /
     connection-timeout: 5000
     template:
-      exchange-request: exchange.request
-      request-routing-key: request.rout.key
-      response-error-queue: response.error
-      response-success-queue: response.success
+      exchange: exchange.request
+      routing-key: request.rout.key
+      error-queue: response.error
+      success-queue: response.success
+    listener:
+      direct:
+        prefetch: 10 # Controla quantas mensagens são consumidas simultaneamente
 
-  zipkin:
-    base-url: http://localhost:9411
-    sender.type: web
-
+  # develop
   output:
     ansi:
       enabled: ALWAYS
-
   devtools:
     restart:
       enabled: true
+
+  zipkin:
+    base-url: ${ZIPKIN_URL:http://localhost:9411}
+    sender:
+      type: web
+    compression:
+      enabled: true
+
+  sleuth:
+    propagation:
+      type: B3,W3C # Suporte a ambos os formatos
+    sampler:
+      probability: ${TRACING_SAMPLE_RATE:1.0} # 100% em dev, ajustar para produção
 
 management:
   endpoints:
@@ -32,48 +44,32 @@ management:
       exposure:
         include: health, info, prometheus, metrics
   metrics:
+    export:
+      prometheus:
+        enabled: true
     tags:
       application: ${spring.application.name}
   tracing:
     sampling:
-      probability: 1.0  # Coleta 100% dos traces em dev
+      probability: ${TRACING_SAMPLE_RATE:1.0}
     tags:
-      application: payment-api  # Nome diferente para cada serviço
-    zipkin:
-      endpoint: http://localhost:9411/api/v2/spans
-    logging:
-      pattern:
-        level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
-
-rmq:
-  tracing:
-    service-name: rmq-producer-api
-
-springdoc:
-  swagger-ui:
-    path: /swagger-ui.html
-    tagsSorter: alpha
-    operationsSorter: alpha
-    disable-swagger-default-url: true
-  api-docs:
-    path: /api-docs
-  version: 1.0.0
-
-server:
-  port: 8081
-
+      application: ${spring.application.name} # Padronizado com app name
 
 logging:
   pattern:
     level: "%5p [${spring.application.name},%X{traceId:-},%X{spanId:-}] %m%n"
+  level:
+    org.springframework.amqp: WARN
+    org.springframework.web: INFO
 
+server:
+  port: ${SERVER_PORT:8081}
 
-  #file:
-  #  name: ${LOG_FILE:-logs/application.log}
-  #  max-history: 7
-  #  max-size: 50MB
-  #  path: ./logs
-
-  #pattern:
-  #  console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
-  #  console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+    disable-swagger-default-url: true
+  api-docs:
+    path: /v3/api-docs
