@@ -2,59 +2,53 @@ spring:
   application:
     name: rmq-backend-worker
   rabbitmq:
-    host: localhost
-    port: 5672
-    username: admin
-    password: admin123
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER:admin}
+    password: ${RABBITMQ_PASS:admin123}
     virtual-host: /
     connection-timeout: 5000
     template:
-      exchange-response: exchange.response
+      exchange: exchange.response
       error-routing-key: error.rout.key
       success-routing-key: success.rout.key
       request-queue: request
+    listener:
+      simple:
+        prefetch: 10
+        concurrency: 5 # Número de consumidores paralelos
 
-  zipkin:
-    base-url: http://localhost:9411
-    sender.type: web
-
+  # develop
   output:
     ansi:
       enabled: ALWAYS
-
   devtools:
     restart:
       enabled: true
+
+  zipkin:
+    base-url: ${ZIPKIN_URL:http://localhost:9411}
+    sender:
+      type: web
 
 management:
   endpoints:
     web:
       exposure:
-        include: health, info, prometheus, metrics
+        include: health, info, prometheus
   metrics:
     tags:
       application: ${spring.application.name}
-
   tracing:
-    propagation:
-      type: B3
-    baggage:
-      remote-fields: trace-id
-    tags:
-      application: payment-worker  # Nome único para o serviço
-    zipkin:
-      endpoint: http://localhost:9411/api/v2/spans
-    logging:
-      pattern:
-        level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
-
-rmq:
-  tracing:
-    service-name: rmq-consumer-worker
-
-server:
-  port: 8082
+    sampling:
+      probability: ${TRACING_SAMPLE_RATE:1.0}
 
 logging:
   pattern:
     level: "%5p [${spring.application.name},%X{traceId:-},%X{spanId:-}] %m%n"
+  level:
+    org.springframework.amqp: WARN
+    org.springframework.web: INFO
+
+server:
+  port: ${SERVER_PORT:8082}

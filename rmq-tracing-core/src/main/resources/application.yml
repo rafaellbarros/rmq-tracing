@@ -2,11 +2,50 @@ management:
   tracing:
     enabled: true
     sampling:
-      probability: 0.1  # Valor padrão mais conservador
+      probability: ${TRACING_SAMPLING_RATE:0.1}  # Configurável via variável de ambiente
+      # Opções avançadas para sistemas de alta carga:
+      rate: 100 # Traces por segundo (alternativa ao probability)
+      max-traces-per-second: 200 # Limite absoluto
 
     zipkin:
-      endpoint: http://localhost:9411/api/v2/spans  # Endpoint do seu servidor Zipkin
-      base-url: ${management.tracing.zipkin.endpoint} # Alternativa para algumas versões
+      endpoint: ${ZIPKIN_ENDPOINT:http://localhost:9411/api/v2/spans}
+      base-url: ${ZIPKIN_BASE_URL:http://localhost:9411}
+      compression:
+        enabled: true  # Habilita compressão GZIP para spans
+      connect-timeout: 5s
+      read-timeout: 10s
+      metrics:
+        enabled: true  # Coleta métricas de envio
 
     propagation:
-      type: B3          # Tipo de propagação (B3 é o padrão para Zipkin)
+      type: ${TRACING_PROPAGATION:B3,W3C}  # Suporte a múltiplos formatos
+      # Configurações específicas para B3:
+      b3:
+        write-baggage: true
+        write-correlation-id: true
+      # Configurações W3C (TraceContext):
+      w3c:
+        baggage-separator: ","
+        baggage-prefix: "baggage-"
+
+    baggage:
+      correlation:
+        enabled: true
+        fields: trace-id,user-id,order-id  # Campos customizados para correlacionar
+
+    tags:
+      application: ${spring.application.name}  # Tag padrão
+      environment: ${ENV:dev}  # Tag de ambiente
+      region: ${REGION:unknown}  # Tag geográfica
+
+# Configurações de métricas (complementar ao tracing)
+micrometer:
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: ${spring.application.name}
+  tracing:
+    propagation:
+      enabled: true

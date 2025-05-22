@@ -23,7 +23,7 @@ public class PaymentErrorProducer {
     private final Propagator propagator;
     private final Tracer tracer;
 
-    @Value("${spring.rabbitmq.template.exchange-response}")
+    @Value("${spring.rabbitmq.template.exchange}")
     private String exchange;
 
     @Value("${spring.rabbitmq.template.error-routing-key}")
